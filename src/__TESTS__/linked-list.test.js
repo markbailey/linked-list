@@ -1,4 +1,4 @@
-import LinkedList from '../models/linked-list';
+import LinkedList from '../linked-list';
 
 test('Verifying list length', () => {
   const count = Math.ceil(Math.random() * 10);
