@@ -41,11 +41,13 @@ test('Verifying push method', () => {
   const linkedList = new LinkedList();
 
   for (let i = 0; i < 6; i++) {
-    const length = linkedList.length;
+    const oldLength = linkedList.length;
     linkedList.push(i);
-    expect(linkedList.length).not.toBe(0);
-    expect(linkedList.length).not.toBe(length);
-    expect(linkedList.length).toBe(length + 1);
+    const newLength = linkedList.length;
+
+    expect(newLength).not.toBe(0);
+    expect(newLength).not.toBe(oldLength);
+    expect(newLength).toBe(oldLength + 1);
     expect(linkedList.indexOf(i)).toBe(i);
   }
 });
@@ -86,8 +88,14 @@ test('Verifying splice method', () => {
   const linkedList = new LinkedList({ values });
   values.reverse(); // Shouldn't be required, but for some reason the values array was being reversed;
 
-  linkedList.splice(0, 0, 0);
-  console.log(linkedList.toArray());
+  const startIndex = 0;
+  const valuesToAdd = [0]
+  const deleteCount = 0;
+  const deletedItems = linkedList.splice(startIndex, deleteCount, ...valuesToAdd);
+
   expect(linkedList.length).toBe(values.length + 1);
-  expect(linkedList.head.value).toBe(0);
+  expect(deletedItems.length).toBe(deleteCount);
+  for (let i = 0; i < valuesToAdd.length; i++) {
+    expect(linkedList.indexOf(valuesToAdd[i])).toBe(startIndex + i);
+  }
 });
