@@ -1,35 +1,37 @@
 import LinkedList from '../linked-list';
 import TYPES from '../types';
 
-test('Verifying list length', () => {
+const newValuesArray = (reverse) => {
   const count = Math.ceil(Math.random() * 10);
   const values = [...new Array(count)].map((_,i) => i);
-  const linkedList = new LinkedList({ values: [...values].reverse() });
+  return reverse 
+    ? values.reverse()
+    : values;
+}
+
+test('Verifying list length', () => {
+  const values = newValuesArray();
+  const linkedList = new LinkedList({ values });
   const length = linkedList.length;
 
-  expect(length).toBe(count);
+  expect(length).toBe(values.length);
 });
 
 test('Verifying list tail', () => {
-  const count = Math.ceil(Math.random() * 10);
-  const values = [...new Array(count)].map((_,i) => i);
-  const linkedList = new LinkedList({
-    type: LinkedList.types.CIRCULAR,
-    values: [...values].reverse()
-  });
+  const values = newValuesArray();
+  const linkedList = new LinkedList({ values });
 
   const tailNode = linkedList.tail;
-  if (count === 0) return expect(tailNode).toBeNull();
+  if (values.length === 0) return expect(tailNode).toBeNull();
   expect(tailNode).not.toBeNull();
-  expect(tailNode.value).toBe(values[0]);
+  expect(tailNode.value).toBe(values[values.length -1]);
 });
 
 test('Verifying findIndex method', () => {
-  const values = [1, 2, 3, 4, 5, 6];
+  const values = newValuesArray();
   const linkedList = new LinkedList({ values });
-  values.reverse(); // Shouldn't be required, but for some reason the values array was being reversed;
 
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < values.length; i++) {
     const index = linkedList.findIndex((node) => node.value === values[i]);
     expect(index).not.toBe(-1);
     expect(index).toBe(i);
@@ -39,7 +41,7 @@ test('Verifying findIndex method', () => {
 test('Verifying indexOf method', () => {
   const values = [1, 2, 3, 4, 5, 6];
   const linkedList = new LinkedList({
-    type: LinkedList.types.DOUBLEY,
+    type: TYPES.DOUBLEY,
     values
   });
 
@@ -68,7 +70,6 @@ test('Verifying push method', () => {
 test('Verifying pop method', () => {
   const values = [1, 2, 3, 4, 5 ,6];
   const linkedList = new LinkedList({ values });
-  values.reverse(); // Shouldn't be required, but for some reason the values array was being reversed;
 
   linkedList.pop();
   let i = linkedList.length;
@@ -83,7 +84,6 @@ test('Verifying pop method', () => {
 test('Verifying slice method', () => {
   const values = [1, 2, 3, 4, 5 ,6];
   const linkedList = new LinkedList({ values });
-  values.reverse(); // Shouldn't be required, but for some reason the values array was being reversed;
 
   const start = 1;
   const end = 5;
@@ -97,10 +97,8 @@ test('Verifying slice method', () => {
 });
 
 test('Verifying splice method', () => {
-  const type = TYPES.CIRCULAR;
   const values = [1, 2, 3, 4, 5 ,6];
-  const linkedList = new LinkedList({ type, values });
-  values.reverse(); // Shouldn't be required, but for some reason the values array was being reversed;
+  const linkedList = new LinkedList({ type: TYPES.CIRCULAR, values });
 
   const startIndex = 3;
   const valuesToAdd = [0]
