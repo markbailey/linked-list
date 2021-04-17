@@ -1,4 +1,4 @@
-const { nodesFromArray, nodesToArray } = require('./functions');
+const { findNode, nodesFromArray, nodesToArray } = require('./functions');
 const ListNode = require('./node');
 const TYPES = require('./types');
 
@@ -40,21 +40,7 @@ class LinkedList {
   }
 
   find(fn) {
-    let currentNode = this.head;
-    let index = 0;
-    
-    while (currentNode) {
-      if (fn(currentNode, index)) return currentNode;
-
-      const nextNode = currentNode.next;
-      currentNode = (nextNode && nextNode.id !== this.head.id)
-        ? nextNode
-        : null;
-      
-      index++;
-    } 
-
-    return null;
+    return findNode(this.head, fn);
   }
 
   indexOf(value) {
@@ -146,44 +132,54 @@ class LinkedList {
   }
 
   splice(start = 0, deleteCount = 0, ...items) {
-    const isSingly = this.type === TYPES.SINGLY;
-    const deletedValues = [];
-    let currentNode = this.head;
-
+    const nfaType = (this.type === TYPES.CIRCULAR) 
+      ? TYPES.DOUBLEY
+      : this.type;
+      
     const lastIndex = (this.length - 1) || 0;
     let startIndex = (start >= 0) ? start : 0;
     if (startIndex > lastIndex) startIndex = lastIndex;
 
-    let prevNode = null;
-    let nextNode = null;
-    let position = 0;
+    let prevNode = startIndex > 0 ? nodesFromArray(this.slice(0, startIndex), nfaType) : null;
+    const nextNode = nodesFromArray(this.slice(startIndex + deleteCount), nfaType);
+    let newNode = nodesFromArray(items, nfaType);
 
-    while (currentNode) {
-      if (position < startIndex) {
-        prevNode = currentNode.next
-          ? currentNode
-          : prevNode;
-      } else if (deleteCount > 0 && deletedValues.length < deleteCount) {
-        deletedValues.push(currentNode.value);
-        nextNode = null;
-      } else if (!nextNode) nextNode = currentNode;
-  
-      currentNode = (currentNode.next && currentNode.next.id !== this.head.id)
-        ? currentNode.next
+    const lastNewNode = items.length > 1
+      ? findNode(newNode, (_, i) => i === items.length -1)
+      : null;
+
+    if (lastNewNode) lastNewNode.next = nextNode;
+    else if (newNode) newNode.next = nextNode;
+
+    const lastPrevNode = prevNode && prevNode.next
+      ? findNode(prevNode, (node) => !node.next || (nextNode && node.next.id === nextNode.id))
+      : null;
+
+    if (lastPrevNode) lastPrevNode.next = newNode || nextNode;
+    else if (prevNode) prevNode.next = newNode || nextNode;
+    // else prevNode = newNode || nextNode;
+
+    if (this.type !== TYPES.SINGLY) {
+      if (nextNode) nextNode.previous = lastNewNode || newNode || lastPrevNode || prevNode;
+      if (newNode) newNode.previous = lastPrevNode || prevNode;
+    }
+    
+    if (this.type === TYPES.CIRCULAR) {
+      const lastNode = nextNode 
+        ? findNode(nextNode, (node) => !node.next || (prevNode && node.next.id === prevNode.id))
         : null;
-      position++;
+      
+      if (prevNode) prevNode.previous = lastNode || nextNode || lastNewNode || newNode;
+      if (lastNode) lastNode.next = prevNode;
+      else if (nextNode) nextNode.next = prevNode;
+      else if (lastNewNode) lastNewNode.next = prevNode;
+      else if (newNode) newNode.next = prevNode;
     }
 
-    items.forEach((value) => {
-      const previous = !isSingly ? prevNode : null;
-      const node = new ListNode({ value, previous });
-      if (prevNode) prevNode.next = node;
-      prevNode = node;
-    });
-
-    if (prevNode) prevNode.next = nextNode;
-    if (!this.head) this.head = prevNode || nextNode;
-    return deletedValues;
+    this.head = prevNode || newNode || nextNode;
+    return deleteCount > 0
+      ? this.slice(startIndex, startIndex + deleteCount)
+      : [];
   }
 }
 
