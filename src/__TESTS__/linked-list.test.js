@@ -1,7 +1,7 @@
 import LinkedList from '../linked-list';
 import TYPES from '../types';
 
-const randomNumber = (min = 0, max = 10) => Math.ceil((Math.random() * max));
+const randomNumber = (min = 0, max = 10) => Math.floor(Math.random() * (max - min) + min);
 const newValuesArray = (reverse) => {
   const count = randomNumber();
   const values = [...new Array(count)].map((_,i) => i);
@@ -45,7 +45,7 @@ test('Verifying indexOf method', () => {
 
   const count = randomNumber();
   for (let i = 0; i < count; i++) {
-    const index = linkedList.indexOf(i +1);
+    const index = linkedList.indexOf(values[i]);
     expect(index).not.toBe(-1);
     expect(index).toBe(i);
   }
@@ -85,9 +85,10 @@ test('Verifying slice method', () => {
   const values = newValuesArray();
   const linkedList = new LinkedList({ values });
 
-  const start = randomNumber(values.length -1);
-  const end = 5;
+  const start = randomNumber(0, values.length -1);
+  const end = randomNumber(start, values.length -1);
   const count = end - start;
+
   const slicedValues = linkedList.slice(start, end);
   expect(slicedValues.length).toBe(count);
 
@@ -97,12 +98,12 @@ test('Verifying slice method', () => {
 });
 
 test('Verifying splice method', () => {
-  const values = [1, 2, 3, 4, 5 ,6];
-  const linkedList = new LinkedList({ type: TYPES.CIRCULAR, values });
+  const values = newValuesArray();
+  const linkedList = new LinkedList({ values });
 
-  const startIndex = 3;
-  const valuesToAdd = [0]
-  const deleteCount = 1;
+  const startIndex = randomNumber(0, values.length -1);
+  const valuesToAdd = [...new Array(randomNumber(1))].map((_, i) => randomNumber(i));
+  const deleteCount = randomNumber(0, values.length);
   const newLength = (values.length - deleteCount) + valuesToAdd.length;
   const deletedItems = linkedList.splice(startIndex, deleteCount, ...valuesToAdd);
 
