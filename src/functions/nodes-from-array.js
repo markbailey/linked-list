@@ -1,7 +1,7 @@
 import ListNode from '../node';
 import TYPES from '../types';
 
-export default function(array, type) {
+export default function(array, listType) {
   let lastNode = null;
   const node = 
     array.reverse()
@@ -12,13 +12,13 @@ export default function(array, type) {
         }
         
         const newNode = new ListNode({ value: current, next: accumulator });
-        if (type !== TYPES.SINGLY)
+        if (listType !== TYPES.SINGLY)
           accumulator.previous = newNode;
 
         return newNode;      
       }, null);
 
-  if (node && lastNode && type === TYPES.CIRCULAR) {
+  if (node && lastNode && listType === TYPES.CIRCULAR) {
     lastNode.next = node;
     node.previous = lastNode;
   }

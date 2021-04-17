@@ -1,11 +1,11 @@
-export default function(node) {
+export default function(startNode) {
   const array = [];
-  let currentNode = node;
+  let currentNode = startNode;
   
   while (currentNode) {
     array.push(currentNode.value);
     currentNode = 
-      (currentNode.next && currentNode.next.id !== node.id)
+      (currentNode.next && currentNode.next.id !== startNode.id)
         ? currentNode.next
         : null;
   }
