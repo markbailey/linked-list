@@ -24,6 +24,18 @@ test('Verifying list tail', () => {
   expect(tailNode.value).toBe(values[0]);
 });
 
+test('Verifying findIndex method', () => {
+  const values = [1, 2, 3, 4, 5, 6];
+  const linkedList = new LinkedList({ values });
+  values.reverse(); // Shouldn't be required, but for some reason the values array was being reversed;
+
+  for (let i = 0; i < 6; i++) {
+    const index = linkedList.findIndex((node) => node.value === values[i]);
+    expect(index).not.toBe(-1);
+    expect(index).toBe(i);
+  }
+});
+
 test('Verifying indexOf method', () => {
   const values = [1, 2, 3, 4, 5, 6];
   const linkedList = new LinkedList({

@@ -43,6 +43,13 @@ class LinkedList {
     return findNode(this.head, fn);
   }
 
+  findIndex(fn) {
+    const node = this.find(fn);
+    return node
+      ? this.indexOf(node.value)
+      : -1;
+  }
+
   indexOf(value) {
     let currentNode = this.head;
     let index = -1;
