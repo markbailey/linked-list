@@ -1,8 +1,9 @@
 import LinkedList from '../linked-list';
 import TYPES from '../types';
 
+const randomNumber = (min = 0, max = 10) => Math.ceil((Math.random() * max));
 const newValuesArray = (reverse) => {
-  const count = Math.ceil(Math.random() * 10);
+  const count = randomNumber();
   const values = [...new Array(count)].map((_,i) => i);
   return reverse 
     ? values.reverse()
@@ -39,13 +40,11 @@ test('Verifying findIndex method', () => {
 });
 
 test('Verifying indexOf method', () => {
-  const values = [1, 2, 3, 4, 5, 6];
-  const linkedList = new LinkedList({
-    type: TYPES.DOUBLEY,
-    values
-  });
+  const values = newValuesArray();
+  const linkedList = new LinkedList({ values });
 
-  for (let i = 0; i < 6; i++) {
+  const count = randomNumber();
+  for (let i = 0; i < count; i++) {
     const index = linkedList.indexOf(i +1);
     expect(index).not.toBe(-1);
     expect(index).toBe(i);
@@ -55,7 +54,8 @@ test('Verifying indexOf method', () => {
 test('Verifying push method', () => {
   const linkedList = new LinkedList();
 
-  for (let i = 0; i < 6; i++) {
+  const count = randomNumber();
+  for (let i = 0; i < count; i++) {
     const oldLength = linkedList.length;
     linkedList.push(i);
     const newLength = linkedList.length;
@@ -68,7 +68,7 @@ test('Verifying push method', () => {
 });
 
 test('Verifying pop method', () => {
-  const values = [1, 2, 3, 4, 5 ,6];
+  const values = newValuesArray();
   const linkedList = new LinkedList({ values });
 
   linkedList.pop();
@@ -82,10 +82,10 @@ test('Verifying pop method', () => {
 });
 
 test('Verifying slice method', () => {
-  const values = [1, 2, 3, 4, 5 ,6];
+  const values = newValuesArray();
   const linkedList = new LinkedList({ values });
 
-  const start = 1;
+  const start = randomNumber(values.length -1);
   const end = 5;
   const count = end - start;
   const slicedValues = linkedList.slice(start, end);
