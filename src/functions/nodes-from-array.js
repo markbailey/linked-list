@@ -4,7 +4,7 @@ import TYPES from '../types';
 export default function(array, listType) {
   let lastNode = null;
   const node = 
-    array.reverse()
+    [...array].reverse()
       .reduce((accumulator, current) => {
         if (!accumulator) {
           lastNode = new ListNode({ value: current });
