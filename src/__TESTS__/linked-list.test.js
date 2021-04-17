@@ -1,4 +1,5 @@
 import LinkedList from '../linked-list';
+import TYPES from '../types';
 
 test('Verifying list length', () => {
   const count = Math.ceil(Math.random() * 10);
@@ -84,16 +85,18 @@ test('Verifying slice method', () => {
 });
 
 test('Verifying splice method', () => {
+  const type = TYPES.CIRCULAR;
   const values = [1, 2, 3, 4, 5 ,6];
-  const linkedList = new LinkedList({ values });
+  const linkedList = new LinkedList({ type, values });
   values.reverse(); // Shouldn't be required, but for some reason the values array was being reversed;
 
-  const startIndex = 0;
+  const startIndex = 3;
   const valuesToAdd = [0]
-  const deleteCount = 0;
+  const deleteCount = 1;
+  const newLength = (values.length - deleteCount) + valuesToAdd.length;
   const deletedItems = linkedList.splice(startIndex, deleteCount, ...valuesToAdd);
 
-  expect(linkedList.length).toBe(values.length + 1);
+  expect(linkedList.length).toBe(newLength);
   expect(deletedItems.length).toBe(deleteCount);
   for (let i = 0; i < valuesToAdd.length; i++) {
     expect(linkedList.indexOf(valuesToAdd[i])).toBe(startIndex + i);
