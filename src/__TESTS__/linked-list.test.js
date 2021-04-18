@@ -1,13 +1,18 @@
 import LinkedList from '../linked-list';
-import TYPES from '../types';
 
 const randomNumber = (min = 0, max = 10) => Math.floor(Math.random() * (max - min) + min);
-const newValuesArray = (reverse) => {
-  const count = randomNumber();
-  const values = [...new Array(count)].map((_,i) => i);
+const newValuesArray = (reverse = false, unique = false) => {
+  const count = randomNumber(1);
+  const randomValues = [...new Array(count)].map((_,i) => randomNumber(i));
+  const valuesToReturn = unique
+    ? randomValues.filter(
+        (value, index, self) => self.indexOf(value) === index
+      ) 
+    : randomValues;
+
   return reverse 
-    ? values.reverse()
-    : values;
+    ? valuesToReturn.reverse()
+    : valuesToReturn;
 }
 
 test('Verifying list length', () => {
@@ -29,24 +34,21 @@ test('Verifying list tail', () => {
 });
 
 test('Verifying findIndex method', () => {
-  const values = newValuesArray();
+  const values = newValuesArray(false, true);
   const linkedList = new LinkedList({ values });
 
   for (let i = 0; i < values.length; i++) {
     const index = linkedList.findIndex((node) => node.value === values[i]);
-    expect(index).not.toBe(-1);
     expect(index).toBe(i);
   }
 });
 
 test('Verifying indexOf method', () => {
-  const values = newValuesArray();
+  const values = newValuesArray(false, true);
   const linkedList = new LinkedList({ values });
 
-  const count = randomNumber();
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < values.length; i++) {
     const index = linkedList.indexOf(values[i]);
-    expect(index).not.toBe(-1);
     expect(index).toBe(i);
   }
 });
@@ -98,18 +100,21 @@ test('Verifying slice method', () => {
 });
 
 test('Verifying splice method', () => {
-  const values = newValuesArray();
+  const values = newValuesArray(1);
   const linkedList = new LinkedList({ values });
 
   const startIndex = randomNumber(0, values.length -1);
-  const valuesToAdd = [...new Array(randomNumber(1))].map((_, i) => randomNumber(i));
-  const deleteCount = randomNumber(0, values.length);
+  const valuesToAdd = newValuesArray();
+  const deleteCount = randomNumber(0, values.length - startIndex);
+
   const newLength = (values.length - deleteCount) + valuesToAdd.length;
   const deletedItems = linkedList.splice(startIndex, deleteCount, ...valuesToAdd);
 
+  const newArray = [...values];
+  const testDeletedItems = newArray.splice(startIndex, deleteCount, ...valuesToAdd);
+
   expect(linkedList.length).toBe(newLength);
   expect(deletedItems.length).toBe(deleteCount);
-  for (let i = 0; i < valuesToAdd.length; i++) {
-    expect(linkedList.indexOf(valuesToAdd[i])).toBe(startIndex + i);
-  }
+  expect(JSON.stringify(deletedItems)).toBe(JSON.stringify(testDeletedItems));
+  expect(JSON.stringify(linkedList.toArray())).toBe(JSON.stringify(newArray));
 });
