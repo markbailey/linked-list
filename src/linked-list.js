@@ -147,46 +147,43 @@ class LinkedList {
     let startIndex = (start >= 0) ? start : 0;
     if (startIndex > lastIndex) startIndex = lastIndex;
 
-    let prevNode = startIndex > 0 ? nodesFromArray(this.slice(0, startIndex), nfaType) : null;
-    const nextNode = nodesFromArray(this.slice(startIndex + deleteCount), nfaType);
-    let newNode = nodesFromArray(items, nfaType);
-
-    const lastNewNode = items.length > 1
-      ? findNode(newNode, (_, i) => i === items.length -1)
-      : null;
-
-    if (lastNewNode) lastNewNode.next = nextNode;
-    else if (newNode) newNode.next = nextNode;
-
-    const lastPrevNode = prevNode && prevNode.next
-      ? findNode(prevNode, (node) => !node.next || (nextNode && node.next.id === nextNode.id))
-      : null;
-
-    if (lastPrevNode) lastPrevNode.next = newNode || nextNode;
-    else if (prevNode) prevNode.next = newNode || nextNode;
-    // else prevNode = newNode || nextNode;
-
-    if (this.type !== TYPES.SINGLY) {
-      if (nextNode) nextNode.previous = lastNewNode || newNode || lastPrevNode || prevNode;
-      if (newNode) newNode.previous = lastPrevNode || prevNode;
-    }
-    
-    if (this.type === TYPES.CIRCULAR) {
-      const lastNode = nextNode 
-        ? findNode(nextNode, (node) => !node.next || (prevNode && node.next.id === prevNode.id))
-        : null;
-      
-      if (prevNode) prevNode.previous = lastNode || nextNode || lastNewNode || newNode;
-      if (lastNode) lastNode.next = prevNode;
-      else if (nextNode) nextNode.next = prevNode;
-      else if (lastNewNode) lastNewNode.next = prevNode;
-      else if (newNode) newNode.next = prevNode;
-    }
-
-    this.head = prevNode || newNode || nextNode;
-    return deleteCount > 0
+    const deletedItems = deleteCount > 0
       ? this.slice(startIndex, startIndex + deleteCount)
       : [];
+
+    const prevNode = startIndex > 0 ? nodesFromArray(this.slice(0, startIndex), nfaType) : null;
+    const nextNode = nodesFromArray(this.slice((startIndex + deleteCount)), nfaType);
+    const newNode = nodesFromArray(items, nfaType);
+
+    const stitchNodes = (...nodes) => {
+      let prevNode = null;
+      nodes.forEach((node) => {
+        const lastNode = findNode(node, (n) => !n.next);
+        if (prevNode && node) prevNode.next = node;
+        prevNode = lastNode || prevNode;
+      });
+
+      if (this.type !== TYPES.SINGLY) {
+        prevNode = null;
+        [...nodes].reverse().forEach((node, i) => {
+          const lastNode = findNode(prevNode, (n) => !n.next);
+          if (lastNode) node.previous = lastNode;
+          prevNode = node;
+        });
+      }
+    };
+
+    stitchNodes(prevNode, newNode, nextNode);
+    this.head = prevNode || newNode || nextNode;
+    if (this.type === TYPES.CIRCULAR) {
+      const tailNode = findNode(this.head, (node) => !node.next);
+      if (tailNode) {
+        this.head.previous = tailNode;
+        tailNode.next = this.head;
+      }
+    }
+
+    return deletedItems;
   }
 }
 
