@@ -18,9 +18,7 @@ const newValuesArray = (reverse = false, unique = false) => {
 test('Verifying list length', () => {
   const values = newValuesArray();
   const linkedList = new LinkedList({ values });
-  const length = linkedList.length;
-
-  expect(length).toBe(values.length);
+  expect(linkedList.length).toBe(values.length);
 });
 
 test('Verifying list tail', () => {
@@ -28,7 +26,9 @@ test('Verifying list tail', () => {
   const linkedList = new LinkedList({ values });
 
   const tailNode = linkedList.tail;
-  if (values.length === 0) return expect(tailNode).toBeNull();
+  if (values.length === 0) 
+    return expect(tailNode).toBeNull();
+    
   expect(tailNode).not.toBeNull();
   expect(tailNode.value).toBe(values[values.length -1]);
 });
