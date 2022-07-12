@@ -1,5 +1,5 @@
-import { ListType } from 'common';
-import Node from 'models/Node';
+import { ListType } from '../common';
+import Node from '../models/Node';
 
 function nodesFromArray<T>(array: T[], listType: ListType) {
   let lastNode = null;

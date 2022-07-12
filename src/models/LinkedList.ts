@@ -1,7 +1,7 @@
-import { ListType } from 'common';
-import findNode from 'functions/findNode';
-import nodesFromArray from 'functions/nodesFromArray';
-import nodesToArray from 'functions/nodesToArray';
+import { ListType } from '../common';
+import findNode from '../functions/findNode';
+import nodesFromArray from '../functions/nodesFromArray';
+import nodesToArray from '../functions/nodesToArray';
 import Node from './Node';
 
 class LinkedList<T> {

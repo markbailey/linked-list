@@ -1,4 +1,4 @@
-import randomString from 'functions/randomString';
+import randomString from '../functions/randomString';
 
 class Node<T> implements ListNode<T> {
   readonly id: string;
